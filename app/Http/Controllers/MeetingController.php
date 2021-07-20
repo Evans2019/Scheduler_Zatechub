@@ -35,7 +35,31 @@ class MeetingController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validatedData = $request->validate([
+            'title' => 'required',
+            'channel' => 'nullable',
+            'note' => 'nullable',
+            'date' => 'required',
+            'start_time' => 'required',
+            'end_time' => 'required',
+            'time_zone' => 'required',
+            'creator_name' => 'string',
+            'creator_email' => 'email'
+        ]);
+
+        // $meeting = new Meeting;
+        // $meeting->title = $validatedData['title'];
+        // $meeting->title = $validatedData['title'];
+        // $meeting->title = $validatedData['title'];
+        // $meeting->title = $validatedData['title'];
+        // $meeting->title = $validatedData['title'];
+        // $meeting->title = $validatedData['title'];
+
+        // $meeting->save();
+
+        $meeting = Meeting::create($validatedData);
+        
+        return json_encode($meeting);
     }
 
     /**

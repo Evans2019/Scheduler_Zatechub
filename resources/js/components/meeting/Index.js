@@ -3,6 +3,7 @@ import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { useFormik } from 'formik'
+import axios from "axios";
 
 const CreateMeeting = ()=> {
 
@@ -26,6 +27,7 @@ const CreateMeeting = ()=> {
         initialValues:{
             title:'',
             note:'',
+            channel: '',
             date:'',
             startTime:'',
             endTime:'',
@@ -44,6 +46,31 @@ const CreateMeeting = ()=> {
           });
         };
     }, [isLoading]);
+
+    /* Data submission */
+    const submit =()=>{
+        const meetingData = {
+            title: formik.values.title,
+            note: formik.values.note,
+            channel: formik.values.channel,
+            date: formik.values.date,
+            start_time: formik.values.startTime,
+            end_time: formik.values.endTime,
+            time_zone: 'Africa/Johannesburg', /* to replace */
+            creator_name: formik.values.creatorName,
+            creator_email: formik.values.creatorEmail,
+        };
+
+        axios.post('/meetings', meetingData)
+            .then(
+                //Success msg or redirect user
+                response => alert(JSON.stringify(response.data))
+            )
+            .catch(error => {
+                //Error notification
+                console.log("ERROR:: ",error.response.data);
+            });
+    }
 
     /* Open Modal */
     const showModal = () => {
@@ -100,9 +127,10 @@ const CreateMeeting = ()=> {
                                 <Form.Label>Channel</Form.Label>
                                 <Form.Control
                                     as="select"
-                                    onChange={e => {
-                                        console.log("e.target.value", e.target.value);
-                                    }}
+                                    onChange={formik.handleChange} 
+                                    value={formik.values.channel}
+                                    id='channel'
+                                    name='channel'
                                 >
                                     <option value="select">Select Option</option>
                                     <option value="Zoom">Zoom</option>
@@ -253,7 +281,7 @@ const CreateMeeting = ()=> {
                     }
                     {
                         step == 3 ? (<>
-                                <Button variant="success">
+                                <Button variant="success" onClick={submit}>
                                     Confrim
                                 </Button>
                             </>):(<>

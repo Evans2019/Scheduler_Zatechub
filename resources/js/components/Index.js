@@ -7,7 +7,13 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 function MeetingApp() {
     return (
-       <CreateMeeting/>
+       <Router>
+        <div>
+          <Switch>
+            <Route exact path='/' component={CreateMeeting} />     
+          </Switch>
+        </div>
+      </Router>
     );
 };
 
