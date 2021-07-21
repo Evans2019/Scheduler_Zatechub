@@ -1,0 +1,11 @@
+.App {
+    font-family: sans-serif;
+    text-align: center;
+  }
+  
+  ._loading_overlay_content {
+    top: 45%;
+    left: 35%;
+    position: fixed;
+  }
+  

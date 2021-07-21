@@ -47,16 +47,6 @@ class MeetingController extends Controller
             'creator_email' => 'email'
         ]);
 
-        // $meeting = new Meeting;
-        // $meeting->title = $validatedData['title'];
-        // $meeting->title = $validatedData['title'];
-        // $meeting->title = $validatedData['title'];
-        // $meeting->title = $validatedData['title'];
-        // $meeting->title = $validatedData['title'];
-        // $meeting->title = $validatedData['title'];
-
-        // $meeting->save();
-
         $meeting = Meeting::create($validatedData);
         
         return json_encode($meeting);

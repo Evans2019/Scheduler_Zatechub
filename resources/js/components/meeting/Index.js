@@ -2,6 +2,7 @@ import React, { Component, useEffect, useState } from 'react';
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
+import  { Redirect } from 'react-router-dom'
 import { useFormik } from 'formik'
 import axios from "axios";
 
@@ -18,6 +19,13 @@ const CreateMeeting = ()=> {
 
     /* Steps title */
     const [stepTitle, setStepTitle] = useState('');
+
+    /* Redirect state */
+    const [redirect, setRedirect] = useState(false);
+
+    /* meeting datat */
+    const [createdMeeting, setCreatedMeeting] = useState([]);
+
 
     /* Step1 for multiple form */
     const [step, setStep]= useState(1);
@@ -60,12 +68,12 @@ const CreateMeeting = ()=> {
             creator_name: formik.values.creatorName,
             creator_email: formik.values.creatorEmail,
         };
-
+        
         axios.post('/meetings', meetingData)
-            .then(
-                //Success msg or redirect user
-                response => alert(JSON.stringify(response.data))
-            )
+            .then((response) => {
+                setCreatedMeeting(response.data);
+                setRedirect(true);
+              })
             .catch(error => {
                 //Error notification
                 console.log("ERROR:: ",error.response.data);
@@ -102,6 +110,16 @@ const CreateMeeting = ()=> {
         setCreateAccount(createAccount ? false : true );
     };
 
+    /* Redirect */
+    if (redirect) {
+        return <Redirect 
+                    to={{
+                        pathname: `/meeting/:${createdMeeting.id}`,
+                        state: { meeting: createdMeeting }
+                    }} 
+                />
+    }
+            
     const SwitchSteps = () =>{
 
         /* Switch between steps */
@@ -282,7 +300,7 @@ const CreateMeeting = ()=> {
                     {
                         step == 3 ? (<>
                                 <Button variant="success" onClick={submit}>
-                                    Confrim
+                                    Confrim and Share Link
                                 </Button>
                             </>):(<>
                                 <Button 
