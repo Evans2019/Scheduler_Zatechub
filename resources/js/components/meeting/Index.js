@@ -2,8 +2,21 @@ import React, { Component, useEffect, useState } from 'react';
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
+import Navbar from "react-bootstrap/Navbar";
+import Container from "react-bootstrap/Container";
+import InputGroup from "react-bootstrap/InputGroup";
+import FormControl from "react-bootstrap/FormControl";
+import Card from "react-bootstrap/Card";
+import { FaPlus } from 'react-icons/fa';
 import  { Redirect } from 'react-router-dom'
 import { useFormik } from 'formik'
+import { VscAccount } from "react-icons/vsc";
+import { SiGnuprivacyguard } from "react-icons/si";
+import { HiLogin } from "react-icons/hi";
+import { FcCalendar } from "react-icons/fc";
+import { GiCancel } from "react-icons/gi";
+import { IoIosArrowDropleft } from "react-icons/io";
+import { IoIosArrowDropright } from "react-icons/io";
 import axios from "axios";
 
 const CreateMeeting = ()=> {
@@ -68,7 +81,7 @@ const CreateMeeting = ()=> {
             creator_name: formik.values.creatorName,
             creator_email: formik.values.creatorEmail,
         };
-        
+
         axios.post('/meetings', meetingData)
             .then((response) => {
                 setCreatedMeeting(response.data);
@@ -114,7 +127,7 @@ const CreateMeeting = ()=> {
     if (redirect) {
         return <Redirect 
                     to={{
-                        pathname: `/meeting/:${createdMeeting.id}`,
+                        pathname: `/meeting`,
                         state: { meeting: createdMeeting }
                     }} 
                 />
@@ -185,6 +198,7 @@ const CreateMeeting = ()=> {
                                     type="date" 
                                     name='date'
                                 />
+                                
                             </Form.Group>
 
                             <Form.Group className="mb-3" >
@@ -267,7 +281,25 @@ const CreateMeeting = ()=> {
 
     return (
         <div>
-            <button type="button" className="btn btn-danger" onClick={showModal} ><i className="fa fa-plus"></i> Create Meeting</button>
+            <Navbar>
+                <Container>
+                    <Navbar.Brand>Meeting Creator <FcCalendar style={{marginRight: '4%'}}/></Navbar.Brand>
+                    <Navbar.Toggle />
+                    <Navbar.Collapse className="justify-content-end">
+                        <button type="button" className="btn btn-danger" onClick={showModal} ><FaPlus style={{margin: '5px'}}/>Create Meeting</button>
+                    </Navbar.Collapse>
+                </Container>
+            </Navbar>
+            <Card body className="text-center">
+                <Card.Body>
+                    <Card.Title>Create Account <VscAccount/></Card.Title>
+                    <Card.Text>
+                        Create account to have access to all the features!
+                    </Card.Text>
+                    <Button variant="outline-secondary" style={{margin: '3%'}}><HiLogin style={{marginRight: '10px'}}/>Login</Button>
+                    <button className="btn btn-secondary"><SiGnuprivacyguard style={{marginRight: '10px'}}/>Register</button>
+                </Card.Body>
+            </Card>
             <Modal 
                 show={isOpen} 
                 onHide={hideModal}
@@ -289,11 +321,11 @@ const CreateMeeting = ()=> {
                     {
                         step <= 1 ? (
                             <>
-                                <Button variant="outline-secondary"  onClick={hideModal} ><i className="fa fa-angle-left"></i> Cancel</Button>
+                                <Button variant="outline-secondary"  onClick={hideModal} ><GiCancel style={{marginRight: '6px'}}/> Cancel</Button>
                             </>
                         ):(
                             <>
-                                <Button variant="outline-secondary"  onClick={prevScreen} ><i className="fa fa-angle-left"></i> Back</Button>
+                                <Button variant="outline-secondary"  onClick={prevScreen} ><IoIosArrowDropleft style={{marginRight: '6px'}}/> Back</Button>
                             </>
                         )
                     }
@@ -307,7 +339,7 @@ const CreateMeeting = ()=> {
                                     disabled={isLoading}
                                     onClick={!isLoading ? nextScreen : null}
                                     variant="success">
-                                    {isLoading ? 'Loading…' : 'Continue'}
+                                    {isLoading ? 'Loading…' : (<>Continue <IoIosArrowDropright style={{ marginLeft: '8px'}}/></>)}
                                 </Button>
                             </>)
                     }

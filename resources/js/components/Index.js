@@ -6,15 +6,16 @@ import CreateMeeting from './meeting/Index';
 import MeetingDetails from './meeting/Details';
 import Container from "react-bootstrap/Container";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import '../../css/app.css'
 
 function MeetingApp() {
     return (
        <Router>
-        <div>
+        <div style={{margin: '14%'}}>
             <Container>
                 <Switch>
                     <Route exact path='/' component={CreateMeeting} />    
-                    <Route path='/meeting/:id' component={MeetingDetails}/> 
+                    <Route path='/meeting' component={MeetingDetails}/> 
                 </Switch>
             </Container>
         </div>
