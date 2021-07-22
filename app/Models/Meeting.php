@@ -14,6 +14,7 @@ class Meeting extends Model
         'note',
         'channel',
         'date',
+        'slug',
         'start_time',
         'end_time',
         'time_zone',

@@ -70,7 +70,9 @@ const CreateMeeting = ()=> {
             endTime:'',
             timeZone:'',
             creatorName:'',
-            creatorEmail:''
+            creatorEmail:'',
+            password:'',
+            confirmPassword: ''
         }
     });
 
@@ -104,16 +106,34 @@ const CreateMeeting = ()=> {
 
     /* Data submission */
     const submit =()=>{
-
-        if ( step == 3){
-            if(formik.values.creatorEmail == '' || formik.values.creatorName == ''){
-                setShow(true)
-                setError('Please make sure all fields are filled')
-            } else {
-                setShow(false);
+        if(createAccount == true){
+            if ( step == 3){
+                if(formik.values.creatorEmail == '' || formik.values.creatorName == '' || formik.values.password == '' || formik.values.confirmPassword == ''){
+                    setShow(true)
+                    setError('Please make sure all fields are filled')
+                } else {
+                    if(formik.values.password !== formik.values.confirmPassword ){
+                        setError('Make sure password match with confirm password')
+                    } else {
+                        setShow(false);
+                        Save();
+                    };
+                }
+            };
+        } else {
+            if ( step == 3){
+                if(formik.values.creatorEmail == '' || formik.values.creatorName == ''){
+                    setShow(true)
+                    setError('Please make sure all fields are filled')
+                } else {
+                    setShow(false);
+                    Save();
+                };
             };
         };
+    }
 
+    const Save =()=>{
         const meetingData = {
             title: formik.values.title,
             note: formik.values.note,
@@ -124,8 +144,8 @@ const CreateMeeting = ()=> {
             time_zone: 'Africa/Johannesburg', /* to replace */
             creator_name: formik.values.creatorName,
             creator_email: formik.values.creatorEmail,
+            password: formik.values.password,
         };
-
         axios.post('/meetings', meetingData)
             .then((response) => {
                 setCreatedMeeting(response.data);
@@ -135,7 +155,7 @@ const CreateMeeting = ()=> {
                 //Error notification
                 console.log("ERROR:: ",error.response.data);
             });
-    }
+    };
 
     /* Open Modal */
     const showModal = () => {
@@ -221,6 +241,7 @@ const CreateMeeting = ()=> {
                                     value={formik.values.title }
                                     id='title'
                                     name='title' 
+                                    
                                 />
                             </Form.Group>
 
@@ -321,25 +342,40 @@ const CreateMeeting = ()=> {
 
                             <Form.Group className="mb-3" >
                                 <Form.Label>Email</Form.Label>
-                                <Form.Control 
+                                <Form.Control
+                                    autoComplete="off" 
                                     type="email" 
-                                    placeholder="Enter ypur Email" 
+                                    placeholder="Enter your Email" 
                                     onChange={formik.handleChange} 
                                     value={formik.values.creatorEmail }
                                     id='creatorEmail'
                                     name='creatorEmail'
-                                    autoComplete="off"
                                 />
                             </Form.Group>
 
-                            <Form.Group className={ createAccount ?  "mb-3" : "mb-3 d-none" } controlId="formpassword">
+                            <Form.Group className={ createAccount ?  "mb-3" : "mb-3 d-none" } >
                                 <Form.Label>Password</Form.Label>
-                                <Form.Control autoComplete="off" type="password" placeholder="Enter your password" />
+                                <Form.Control 
+                                    autoComplete="off" 
+                                    type="password" 
+                                    placeholder="Enter your password" 
+                                    onChange={formik.handleChange} 
+                                    value={formik.values.password }
+                                    id='password'
+                                    name='password'
+                                />
                             </Form.Group>
 
-                            <Form.Group className={ createAccount ?  "mb-3" : "mb-3 d-none" } controlId="formConfrimPassword">
+                            <Form.Group className={ createAccount ?  "mb-3" : "mb-3 d-none" }>
                                 <Form.Label>Confrim Password</Form.Label>
-                                <Form.Control type="password" placeholder="Confrim Password" />
+                                <Form.Control 
+                                    type="password" 
+                                    placeholder="Confrim Password" 
+                                    onChange={formik.handleChange} 
+                                    value={formik.values.confirmPassword }
+                                    id='confirmPassword'
+                                    name='confirmPassword'
+                                />
                             </Form.Group>
 
                             <Form.Check

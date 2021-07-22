@@ -14,7 +14,7 @@ import { BsFillReplyAllFill } from "react-icons/bs";
 const MeetingDetails =(props)=> {
 
     /* State to store created meeting */
-    const [meeting, setMeeting ] = useState([]);
+    const [meeting, setMeeting ] = useState(props.location.state.meeting);
 
     /* get current meeting after redirect */
     useEffect(()=>{
@@ -23,7 +23,7 @@ const MeetingDetails =(props)=> {
         setMeeting(props.location.state.meeting);
 
         /* Use this id (better use slug) to query the meeting */
-        console.log(props.match.params.id); 
+        console.log(props.location.state.meeting); 
     });
 
     return (

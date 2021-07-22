@@ -19,6 +19,7 @@ class CreateMeetingsTable extends Migration
             $table->string('channel');
             $table->text('note');
             $table->date('date');
+            $table->string('slug')->nullable();
             $table->time('start_time');
             $table->time('end_time');
             $table->string('time_zone');

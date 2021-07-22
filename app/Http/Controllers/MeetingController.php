@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Meeting;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class MeetingController extends Controller
 {
@@ -44,11 +47,31 @@ class MeetingController extends Controller
             'end_time' => 'required',
             'time_zone' => 'required',
             'creator_name' => 'string',
-            'creator_email' => 'email'
+            'creator_email' => 'email',
         ]);
 
         $meeting = Meeting::create($validatedData);
+
+        /* slug */
+        $meeting->slug = Str::slug($meeting->title,"-");
+        $meeting->save();
+        $meeting->refresh();
         
+        if($request->has('password')){
+            /* Creating User */
+            $current_user = User::create([
+                'name' => $request->input('creator_name'), 
+                'email' => $request->input('creator_email'),
+                'password' => Hash::make($request->input('password')),
+            ]);
+
+            /* Update Meeting */
+            $meeting->update(['user_id' => $current_user->id]);
+            $meeting->refresh();
+            
+            return json_encode($meeting);
+        } 
+
         return json_encode($meeting);
     }
 
