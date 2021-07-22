@@ -4,9 +4,8 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Navbar from "react-bootstrap/Navbar";
 import Container from "react-bootstrap/Container";
-import InputGroup from "react-bootstrap/InputGroup";
-import FormControl from "react-bootstrap/FormControl";
 import Card from "react-bootstrap/Card";
+import Alert from "react-bootstrap/Alert";
 import { FaPlus } from 'react-icons/fa';
 import  { Redirect } from 'react-router-dom'
 import { useFormik } from 'formik'
@@ -18,17 +17,34 @@ import { GiCancel } from "react-icons/gi";
 import { IoIosArrowDropleft } from "react-icons/io";
 import { IoIosArrowDropright } from "react-icons/io";
 import axios from "axios";
+import Login from '../auth/Login';
+import Register from '../auth/Register';
 
 const CreateMeeting = ()=> {
 
     /* Modal states */
     const [isOpen, setIsOpen] = useState(false);
 
+    /* Modal Login states */
+    const [isOpenLogin, setIsOpenLogin] = useState(false);
+
+    /* Show Alert */
+    const [show, setShow] = useState(false);
+
+    /* Error message */
+    const [error, setError] = useState();
+
+    /* Modal Register states */
+    const [isOpenRegister, setIsOpenRegister] = useState(false);
+
     /* Continue button loading state */
     const [isLoading, setLoading] = useState(false);
 
     /* Check if user want to create account */
     const [createAccount, setCreateAccount] = useState(false);
+
+    /* Continue Button disable */
+    const [disable, setDisable] = useState(true)
 
     /* Steps title */
     const [stepTitle, setStepTitle] = useState('');
@@ -63,13 +79,41 @@ const CreateMeeting = ()=> {
         if (isLoading) {
             continueLoadingTime().then(() => {
             setLoading(false);
-            setStep(step + 1);            
+            /* Disable button */
+            if(step == 1 ){
+                if(formik.values.title == ''){
+                    setShow(true);
+                    setError('Please make sure Title is filled');
+                } else {
+                    setShow(false);
+                    setStep(step + 1); 
+                };   
+            } else if ( step == 2){
+                if(formik.values.endTime == '' || formik.values.date == '' || formik.values.startTime == ''){
+                    setShow(true)
+                    setError('Please make sure all fields are filled')
+                } else {
+                    setShow(false);
+                    setStep(step + 1); 
+                }; 
+            }
+                 
           });
         };
     }, [isLoading]);
 
     /* Data submission */
     const submit =()=>{
+
+        if ( step == 3){
+            if(formik.values.creatorEmail == '' || formik.values.creatorName == ''){
+                setShow(true)
+                setError('Please make sure all fields are filled')
+            } else {
+                setShow(false);
+            };
+        };
+
         const meetingData = {
             title: formik.values.title,
             note: formik.values.note,
@@ -103,8 +147,30 @@ const CreateMeeting = ()=> {
         setIsOpen(false);
     };
 
+    /* Open Modal Login*/
+    const showModalLogin = () => {
+        setIsOpenLogin(true);
+    };
+  
+    /* Close the Modal Login */
+    const hideModalLogin = () => {
+        setIsOpenLogin(false);
+    };
+
+
+    /* Open Modal Rgister*/
+    const showModalRegister = () => {
+        setIsOpenRegister(true);
+    };
+  
+    /* Close the Modal Register */
+    const hideModalRegister = () => {
+        setIsOpenRegister(false);
+    };
+
     /* Loading Timer for continue button */
     const continueLoadingTime =()=> {
+        setShow(false);
         return new Promise((resolve) => setTimeout(resolve, 100));
     };
 
@@ -115,6 +181,7 @@ const CreateMeeting = ()=> {
 
     /* Moving to the prev screen */
     const prevScreen =()=>{
+        setShow(false);
         setStep(step - 1);
     };
 
@@ -138,10 +205,13 @@ const CreateMeeting = ()=> {
         /* Switch between steps */
         switch(step) {
             case 1:
-                setStepTitle('What is the occasion?');
+                setStepTitle('Tell us about your meeting?');
                 return (
                     <>
                         <Form className="m-5">
+                            <Alert show={show} variant="danger">
+                                <GiCancel style={{marginRight: '6px'}} onClick={() => setShow(false)}/> {error}
+                            </Alert>
                             <Form.Group className="mb-3" >
                                 <Form.Label>Title</Form.Label>
                                 <Form.Control 
@@ -155,7 +225,7 @@ const CreateMeeting = ()=> {
                             </Form.Group>
 
                             <Form.Group className="mb-3" >
-                                <Form.Label>Channel</Form.Label>
+                                <Form.Label>Channel  (optional) </Form.Label>
                                 <Form.Control
                                     as="select"
                                     onChange={formik.handleChange} 
@@ -171,7 +241,7 @@ const CreateMeeting = ()=> {
                             </Form.Group>
 
                             <Form.Group className="mb-3">
-                                <Form.Label>Note</Form.Label>
+                                <Form.Label>Note  (optional)</Form.Label>
                                 <Form.Control 
                                     as="textarea" 
                                     onChange={formik.handleChange} 
@@ -189,6 +259,9 @@ const CreateMeeting = ()=> {
                 return (
                     <>
                         <Form className="m-5">
+                            <Alert show={show} variant="danger">
+                                <GiCancel style={{marginRight: '6px'}} onClick={() => setShow(false)}/> {error}
+                            </Alert>
                             <Form.Group className="mb-3" >
                                 <Form.Label>Date</Form.Label>
                                 <Form.Control 
@@ -231,6 +304,9 @@ const CreateMeeting = ()=> {
                 return (
                     <>
                         <Form className="m-5">
+                            <Alert show={show} variant="danger">
+                                <GiCancel style={{marginRight: '6px'}} onClick={() => setShow(false)}/> {error}
+                            </Alert>
                             <Form.Group className="mb-3" >
                                 <Form.Label>Name</Form.Label>
                                 <Form.Control 
@@ -281,6 +357,36 @@ const CreateMeeting = ()=> {
 
     return (
         <div>
+            {/* Login Modal */}
+            <Modal 
+                show={isOpenLogin} 
+                onHide={hideModalLogin}
+                centered
+                size="lg"
+                dialogClassName={"primaryModal"}
+            >
+                
+                <Modal.Body>
+                    <Modal.Header><Card.Title>Login<VscAccount style={{marginLeft: '10px'}}/></Card.Title></Modal.Header>
+                    <Login/>
+                </Modal.Body>
+            </Modal>
+
+            {/* Register */}
+            <Modal 
+                show={isOpenRegister} 
+                onHide={hideModalRegister}
+                centered
+                size="lg"
+                dialogClassName={"primaryModal"}
+            >
+                
+                <Modal.Body>
+                    <Modal.Header><Card.Title>Register<VscAccount style={{marginLeft: '10px'}}/></Card.Title></Modal.Header>
+                    <Register/>
+                </Modal.Body>
+            </Modal>
+
             <Navbar>
                 <Container>
                     <Navbar.Brand>Meeting Creator <FcCalendar style={{marginRight: '4%'}}/></Navbar.Brand>
@@ -296,8 +402,8 @@ const CreateMeeting = ()=> {
                     <Card.Text>
                         Create account to have access to all the features!
                     </Card.Text>
-                    <Button variant="outline-secondary" style={{margin: '3%'}}><HiLogin style={{marginRight: '10px'}}/>Login</Button>
-                    <button className="btn btn-secondary"><SiGnuprivacyguard style={{marginRight: '10px'}}/>Register</button>
+                    <Button variant="outline-secondary" style={{margin: '3%'}} onClick={showModalLogin}><HiLogin style={{marginRight: '10px'}}/>Login</Button>
+                    <Button variant="outline-secondary" onClick={showModalRegister}><SiGnuprivacyguard style={{marginRight: '10px'}} />Register</Button>
                 </Card.Body>
             </Card>
             <Modal 
@@ -311,8 +417,13 @@ const CreateMeeting = ()=> {
             >
                 <Modal.Header>
                     <div className="mx-auto">
-                        STEP {step} OF 3 - {stepTitle}
-                    </div> 
+                    <Card.Text className="text-center">
+                        <small>STEP {step} OF 3</small>                    
+                    </Card.Text>
+                    <Card.Header>
+                        {stepTitle}
+                    </Card.Header> 
+                    </div>
                 </Modal.Header>
                 <Modal.Body>
                     <SwitchSteps/>
